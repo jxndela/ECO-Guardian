@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Location, EcoLocation } from '@/types';
+import { Location, EcoLocation, MapTile } from '@/types';
 
 interface LocationState {
   currentLocation: Location | null;
@@ -8,6 +8,7 @@ interface LocationState {
   isLoading: boolean;
   error: string | null;
   permissionGranted: boolean;
+  currentTile: MapTile | null;
 }
 
 const initialState: LocationState = {
@@ -17,6 +18,7 @@ const initialState: LocationState = {
   isLoading: false,
   error: null,
   permissionGranted: false,
+  currentTile: null,
 };
 
 export const locationSlice = createSlice({
@@ -43,14 +45,18 @@ export const locationSlice = createSlice({
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
+    setCurrentTile: (state, action: PayloadAction<MapTile>) => {
+      state.currentTile = action.payload;
+    },
   },
 });
 
-export const { 
-  setCurrentLocation, 
-  setNearbyEcoLocations, 
+export const {
+  setCurrentLocation,
+  setNearbyEcoLocations,
   addVisitedLocation,
   setPermissionGranted,
   setLoading,
-  setError 
+  setError,
+  setCurrentTile,
 } = locationSlice.actions;

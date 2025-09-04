@@ -10,17 +10,19 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { LocationService } from '@/services/LocationService';
-import { setCurrentLocation, setNearbyEcoLocations } from '@/store/slices/locationSlice';
+import { TileService } from '@/services/TileService';
+import { setCurrentLocation, setNearbyEcoLocations, setCurrentTile } from '@/store/slices/locationSlice';
 import { EcoLocation, EcoLocationType, GreenPlanTarget } from '@/types';
 
 export function MapScreen() {
   const dispatch = useDispatch();
-  const { currentLocation, nearbyEcoLocations } = useSelector(
+  const { currentLocation, nearbyEcoLocations, currentTile } = useSelector(
     (state: RootState) => state.location
   );
   const [selectedLocation, setSelectedLocation] = useState<EcoLocation | null>(null);
-  
+
   const locationService = new LocationService();
+  const tileService = new TileService();
 
   useEffect(() => {
     loadCurrentLocation();
@@ -36,6 +38,8 @@ export function MapScreen() {
     try {
       const location = await locationService.getCurrentLocation();
       dispatch(setCurrentLocation(location));
+      const tile = tileService.getTileFromLocation(location);
+      dispatch(setCurrentTile(tile));
     } catch (error) {
       console.error('Error getting location:', error);
       Alert.alert('Error', 'Failed to get current location');
@@ -156,7 +160,12 @@ export function MapScreen() {
         <Text style={styles.subtitle}>
           Find nearby sustainable locations
         </Text>
-        
+        {currentTile && (
+          <Text style={styles.tileInfo}>
+            Tile: {currentTile.zoom}/{currentTile.x}/{currentTile.y}
+          </Text>
+        )}
+
         {currentLocation && (
           <TouchableOpacity
             style={styles.refreshButton}
@@ -251,6 +260,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#A8D5BA',
     marginBottom: 16,
+  },
+  tileInfo: {
+    fontSize: 12,
+    color: '#A8D5BA',
+    marginBottom: 8,
   },
   refreshButton: {
     backgroundColor: '#2D5A27',

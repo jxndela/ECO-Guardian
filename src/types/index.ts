@@ -12,6 +12,12 @@ export interface Coordinates {
   lng: number;
 }
 
+export interface MapTile {
+  x: number;
+  y: number;
+  zoom: number;
+}
+
 export enum CreatureType {
   GREENIE = 'greenie',
   SPARKIE = 'sparkie',
